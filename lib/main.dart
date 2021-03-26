@@ -21,7 +21,7 @@ class App extends StatelessWidget {
     return MaterialApp(
       home: HomePage(),
       theme: ThemeData(
-        primaryColor: Colors.redAccent,
+        primaryColor: Colors.blue,
       ),
     );
   }
@@ -35,9 +35,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  File _image;
   final picker = ImagePicker();
-  String ageRange;
+  String _ageResult;
+  File _image;
 
   bool _isLoading = false;
 
@@ -56,7 +56,7 @@ class _HomePageState extends State<HomePage> {
       _storageRepository.uploadImage(_image).then((value) {
         _predictionRepository.scan(value).then((value) {
           setState(() {
-            ageRange = value.age;
+            _ageResult = value.age;
             _isLoading = false;
           });
         });
@@ -96,22 +96,27 @@ class _HomePageState extends State<HomePage> {
                       return Container(
                         width: 200,
                         height: 200,
-                        color: Colors.black12,
+                        decoration: ShapeDecoration(
+                          color: Colors.black12,
+                          shape: SuperellipseShape(
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                        ),
                       );
                     },
                   ),
+                  const SizedBox(height: 20),
                   RaisedButton(
                     onPressed: () => getImage(),
-                    shape: SuperellipseShape(
-                        borderRadius: BorderRadius.circular(18)),
-                    color: Colors.redAccent,
+                    color: Colors.blue,
                     textColor: Colors.white,
                     child: const Text("Select photo"),
+                    shape: SuperellipseShape(
+                      borderRadius: BorderRadius.circular(18),
+                    ),
                   ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  ScanResult(age: ageRange),
+                  const SizedBox(height: 30),
+                  ScanResult(age: _ageResult),
                 ],
               ),
             ),

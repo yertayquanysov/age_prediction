@@ -10,7 +10,7 @@ class ScanResult extends StatelessWidget {
     return Visibility(
       visible: age != null,
       child: Text(
-        age,
+        age ?? "",
         style: TextStyle(
           fontSize: 28,
           fontWeight: FontWeight.bold,
