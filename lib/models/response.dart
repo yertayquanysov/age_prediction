@@ -9,7 +9,7 @@ class Response {
 
   static Response fromJson(Map<String, dynamic> data) {
     return Response(
-      age: data["age"].toString(),
+      age: data["age"].toInt().toString(),
     );
   }
 }
