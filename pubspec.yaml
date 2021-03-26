@@ -1,0 +1,24 @@
+name: age_gender_prediction
+description: Prediction
+
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.0
+  image_picker: ^0.6.7+22
+  firebase_core: "0.7.0"
+  firebase_storage: "^7.0.0"
+  uuid: ^2.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

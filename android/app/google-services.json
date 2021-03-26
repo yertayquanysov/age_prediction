@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1017578328236",
+    "project_id": "agegenderprediction",
+    "storage_bucket": "agegenderprediction.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1017578328236:android:5cd0ba5e9d49b392fc4f09",
+        "android_client_info": {
+          "package_name": "kz.ertai.age_gender_prediction"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1017578328236-br9nfi9240uheqcpnvr0v7k0ob985odj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2IR8RuiwKm1X1HMBRq8m4O326KJiYurY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1017578328236-br9nfi9240uheqcpnvr0v7k0ob985odj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
