@@ -9,7 +9,7 @@ class PredictionRepository {
 
   Future<Response> scan(String imageUrl) async {
     final response = await http.post(
-      apiUrl,
+      Uri.parse(apiUrl),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         'x-rapidapi-key': "df4d41b324msh0c443f959f5b566p1e5336jsn55c8f18e2b64",

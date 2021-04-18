@@ -1,13 +1,18 @@
-import 'dart:io';
-
+import 'package:age_gender_prediction/bloc/prediction_cubit.dart';
 import 'package:age_gender_prediction/components/base_progress_bar.dart';
 import 'package:age_gender_prediction/components/scan_result.dart';
-import 'package:age_gender_prediction/repository/prediction_repository.dart';
-import 'package:age_gender_prediction/repository/storage_repository.dart';
+import 'package:age_gender_prediction/repository/ads_repository.dart';
+import 'package:age_gender_prediction/repository/file_repository.dart';
+import 'package:facebook_audience_network/facebook_audience_network.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:superellipse_shape/superellipse_shape.dart';
+
+import 'components/facebook_banner_ads.dart';
+import 'components/preview_image.dart';
+import 'constants.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,105 +26,120 @@ class App extends StatelessWidget {
     return MaterialApp(
       home: HomePage(),
       theme: ThemeData(
-        primaryColor: Colors.blue,
+        primaryColor: Colors.white,
+        textTheme: GoogleFonts.ubuntuTextTheme(
+          Theme.of(context).textTheme,
+        ),
       ),
     );
   }
 }
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key}) : super(key: key);
-
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  final picker = ImagePicker();
-  String _ageResult;
-  File _image;
+  late PredictionCubit _predictionCubit;
+  final _fileRepository = FileRepositoryImpl();
+  final _adsRepository = AdsRepositoryImpl();
 
-  bool _isLoading = false;
+  @override
+  void initState() {
+    super.initState();
 
-  final StorageRepository _storageRepository = StorageRepository();
-  final PredictionRepository _predictionRepository = PredictionRepository();
+    FacebookAudienceNetwork.init();
 
-  void getImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      setState(() {
-        _isLoading = true;
-        _image = File(pickedFile.path);
-      });
-
-      _storageRepository.uploadImage(_image).then((value) {
-        _predictionRepository.scan(value).then((value) {
-          setState(() {
-            _ageResult = value.age;
-            _isLoading = false;
-          });
-        });
-      });
-    }
+    _predictionCubit = PredictionCubit();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Age Prediction"),
+        title: Text(
+          "Age Prediction",
+          style: GoogleFonts.ubuntu(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
-      body: _isLoading
-          ? BaseProgressBar()
-          : Center(
+      body: BlocConsumer(
+        bloc: _predictionCubit,
+        listener: (BuildContext context, state) {
+          if (state is ShowAds) {
+            _adsRepository.showInterstitialAds(delay: 5);
+          }
+        },
+        builder: (BuildContext context, state) {
+          if (state is PredictionException) {
+            return Text(state.message);
+          }
+
+          if (state is PredictionView) {
+            return Center(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Builder(
                     builder: (_) {
-                      if (_image != null) {
+                      if (state.selectedImage.isNotEmpty) {
+                        return PreviewImage(
+                          state.selectedImage,
+                        );
+                      } else {
                         return Container(
                           width: 200,
                           height: 200,
                           decoration: ShapeDecoration(
-                            image: DecorationImage(
-                              image: AssetImage(_image.path),
-                            ),
+                            color: Colors.black12,
                             shape: SuperellipseShape(
                               borderRadius: BorderRadius.circular(50),
                             ),
                           ),
                         );
                       }
-
-                      return Container(
-                        width: 200,
-                        height: 200,
-                        decoration: ShapeDecoration(
-                          color: Colors.black12,
-                          shape: SuperellipseShape(
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                        ),
-                      );
                     },
                   ),
                   const SizedBox(height: 20),
-                  RaisedButton(
-                    onPressed: () => getImage(),
-                    color: Colors.blue,
-                    textColor: Colors.white,
+                  MaterialButton(
                     child: const Text("Select photo"),
-                    shape: SuperellipseShape(
-                      borderRadius: BorderRadius.circular(18),
+                    color: Colors.redAccent,
+                    elevation: 3,
+                    padding: EdgeInsets.only(
+                      left: 20,
+                      right: 20,
+                      top: 15,
+                      bottom: 15,
                     ),
+                    shape: SuperellipseShape(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    onPressed: () => _fileRepository
+                        .getImage()
+                        .then((value) => _predictionCubit.predict(value)),
                   ),
                   const SizedBox(height: 30),
-                  ScanResult(age: _ageResult),
+                  Visibility(
+                    visible: state.result.isNotEmpty,
+                    child: Text(
+                      "Age: " + state.result,
+                      style: const TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ],
               ),
-            ),
+            );
+          }
+
+          return BaseProgressBar();
+        },
+      ),
     );
   }
 }

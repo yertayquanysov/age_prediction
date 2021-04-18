@@ -4,7 +4,7 @@ class Response {
   final String age;
 
   Response({
-    @required this.age,
+    required this.age,
   });
 
   static Response fromJson(Map<String, dynamic> data) {
