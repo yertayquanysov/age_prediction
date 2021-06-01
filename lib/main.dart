@@ -1,6 +1,5 @@
 import 'package:age_gender_prediction/bloc/prediction_cubit.dart';
 import 'package:age_gender_prediction/components/base_progress_bar.dart';
-import 'package:age_gender_prediction/components/scan_result.dart';
 import 'package:age_gender_prediction/repository/ads_repository.dart';
 import 'package:age_gender_prediction/repository/file_repository.dart';
 import 'package:facebook_audience_network/facebook_audience_network.dart';
@@ -10,9 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:superellipse_shape/superellipse_shape.dart';
 
-import 'components/facebook_banner_ads.dart';
 import 'components/preview_image.dart';
-import 'constants.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -108,7 +105,7 @@ class _HomePageState extends State<HomePage> {
                     child: const Text("Select photo"),
                     color: Colors.redAccent,
                     elevation: 3,
-                    padding: EdgeInsets.only(
+                    padding: const EdgeInsets.only(
                       left: 20,
                       right: 20,
                       top: 15,
