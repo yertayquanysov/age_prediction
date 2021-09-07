@@ -38,6 +38,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
   late PredictionCubit _predictionCubit;
   final _fileRepository = FileRepositoryImpl();
   final _adsRepository = AdsRepositoryImpl();
