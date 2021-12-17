@@ -35,8 +35,6 @@ class PredictionCubit extends Cubit<PredictionState> {
       final uploadedImageURL = await _storageRepository.uploadImage(image);
       final predictionResult =
           await _predictionRepository.scan(uploadedImageURL);
-
-      emit(ShowAds());
       emit(PredictionView(
           result: predictionResult.age, selectedImage: uploadedImageURL));
     } catch (e) {

@@ -1,12 +1,13 @@
 import 'package:age_gender_prediction/bloc/prediction_cubit.dart';
 import 'package:age_gender_prediction/components/base_progress_bar.dart';
+import 'package:age_gender_prediction/config.dart';
 import 'package:age_gender_prediction/repository/ads_repository.dart';
 import 'package:age_gender_prediction/repository/file_repository.dart';
-import 'package:facebook_audience_network/facebook_audience_network.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:superellipse_shape/superellipse_shape.dart';
 
 import 'components/preview_image.dart';
@@ -14,6 +15,7 @@ import 'components/preview_image.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await MobileAds.instance.initialize();
   runApp(App());
 }
 
@@ -23,7 +25,9 @@ class App extends StatelessWidget {
     return MaterialApp(
       home: HomePage(),
       theme: ThemeData(
-        primaryColor: Colors.white,
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.transparent,
+        ),
         textTheme: GoogleFonts.ubuntuTextTheme(
           Theme.of(context).textTheme,
         ),
@@ -38,16 +42,36 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   late PredictionCubit _predictionCubit;
   final _fileRepository = FileRepositoryImpl();
-  final _adsRepository = AdsRepositoryImpl();
+  InterstitialAd? _interstitialAd;
+
+  final BannerAd myBanner = BannerAd(
+    adUnitId: admobBannerId,
+    size: AdSize.banner,
+    request: AdRequest(),
+    listener: BannerAdListener(
+      onAdLoaded: (_) => print("Add loaded"),
+      onAdFailedToLoad: (_, __) => print("Failed to load"),
+    ),
+  );
 
   @override
   void initState() {
     super.initState();
 
-    FacebookAudienceNetwork.init();
+    InterstitialAd.load(
+      adUnitId: interstitialAd,
+      request: AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (InterstitialAd ad) {
+          this._interstitialAd = ad;
+        },
+        onAdFailedToLoad: (LoadAdError error) {
+          print('InterstitialAd failed to load: $error');
+        },
+      ),
+    );
 
     _predictionCubit = PredictionCubit();
   }
@@ -66,8 +90,8 @@ class _HomePageState extends State<HomePage> {
       body: BlocConsumer(
         bloc: _predictionCubit,
         listener: (BuildContext context, state) {
-          if (state is ShowAds) {
-            _adsRepository.showInterstitialAds(delay: 5);
+          if (state is PredictionView) {
+            _interstitialAd?.show();
           }
         },
         builder: (BuildContext context, state) {
@@ -84,21 +108,19 @@ class _HomePageState extends State<HomePage> {
                   Builder(
                     builder: (_) {
                       if (state.selectedImage.isNotEmpty) {
-                        return PreviewImage(
-                          state.selectedImage,
-                        );
-                      } else {
-                        return Container(
-                          width: 200,
-                          height: 200,
-                          decoration: ShapeDecoration(
-                            color: Colors.black12,
-                            shape: SuperellipseShape(
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                          ),
-                        );
+                        return PreviewImage(state.selectedImage);
                       }
+
+                      return Container(
+                        width: 200,
+                        height: 200,
+                        decoration: ShapeDecoration(
+                          color: Colors.black12,
+                          shape: SuperellipseShape(
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                        ),
+                      );
                     },
                   ),
                   const SizedBox(height: 20),
@@ -106,6 +128,7 @@ class _HomePageState extends State<HomePage> {
                     child: const Text("Select photo"),
                     color: Colors.redAccent,
                     elevation: 3,
+                    textColor: Colors.white,
                     padding: const EdgeInsets.only(
                       left: 20,
                       right: 20,
