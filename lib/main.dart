@@ -1,8 +1,7 @@
 import 'package:age_gender_prediction/bloc/prediction_cubit.dart';
 import 'package:age_gender_prediction/components/base_progress_bar.dart';
-import 'package:age_gender_prediction/config.dart';
-import 'package:age_gender_prediction/repository/ads_repository.dart';
 import 'package:age_gender_prediction/repository/file_repository.dart';
+import 'package:age_gender_prediction/services/advert_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -42,59 +41,32 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late PredictionCubit _predictionCubit;
   final _fileRepository = FileRepositoryImpl();
-  InterstitialAd? _interstitialAd;
-
-  final BannerAd myBanner = BannerAd(
-    adUnitId: admobBannerId,
-    size: AdSize.banner,
-    request: AdRequest(),
-    listener: BannerAdListener(
-      onAdLoaded: (_) => print("Add loaded"),
-      onAdFailedToLoad: (_, __) => print("Failed to load"),
-    ),
-  );
+  final _predictionCubit = PredictionCubit();
+  final _advertService = AdvertService();
 
   @override
   void initState() {
     super.initState();
 
-    InterstitialAd.load(
-      adUnitId: interstitialAd,
-      request: AdRequest(),
-      adLoadCallback: InterstitialAdLoadCallback(
-        onAdLoaded: (InterstitialAd ad) {
-          this._interstitialAd = ad;
-        },
-        onAdFailedToLoad: (LoadAdError error) {
-          print('InterstitialAd failed to load: $error');
-        },
-      ),
-    );
-
-    _predictionCubit = PredictionCubit();
+    _advertService.showAd();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "Age Prediction",
-          style: GoogleFonts.ubuntu(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        title: const Text("Age Prediction"),
       ),
       body: BlocConsumer(
         bloc: _predictionCubit,
         listener: (BuildContext context, state) {
           if (state is PredictionView) {
-            _interstitialAd?.show();
+            _advertService.showAd();
           }
         },
         builder: (BuildContext context, state) {
+
           if (state is PredictionException) {
             return Text(state.message);
           }
