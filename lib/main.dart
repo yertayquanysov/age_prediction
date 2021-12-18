@@ -41,6 +41,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
   final _fileRepository = FileRepositoryImpl();
   final _predictionCubit = PredictionCubit();
   final _advertService = AdvertService();
@@ -49,7 +50,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
-    _advertService.showAd();
+    _advertService.loadInterstitialAd();
   }
 
   @override
@@ -66,7 +67,6 @@ class _HomePageState extends State<HomePage> {
           }
         },
         builder: (BuildContext context, state) {
-
           if (state is PredictionException) {
             return Text(state.message);
           }
