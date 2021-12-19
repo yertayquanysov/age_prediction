@@ -6,8 +6,6 @@ import '../config.dart';
 
 abstract class FileRepository {
   Future<File> getImage();
-
-  Future<File> takeImage();
 }
 
 class FileRepositoryImpl implements FileRepository {
@@ -21,11 +19,5 @@ class FileRepositoryImpl implements FileRepository {
     );
 
     return File(pickedFile!.path);
-  }
-
-  @override
-  Future<File> takeImage() {
-    // TODO: implement takeImage
-    throw UnimplementedError();
   }
 }
