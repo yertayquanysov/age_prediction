@@ -1,5 +1,6 @@
 import 'package:age_gender_prediction/bloc/prediction_cubit.dart';
 import 'package:age_gender_prediction/components/base_progress_bar.dart';
+import 'package:age_gender_prediction/config.dart';
 import 'package:age_gender_prediction/repository/file_repository.dart';
 import 'package:age_gender_prediction/services/advert_service.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -15,6 +16,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await MobileAds.instance.initialize();
+
+  MobileAds.instance.updateRequestConfiguration(RequestConfiguration(
+      testDeviceIds: ["B312B83BEF97FD5524A6EB49C498F8E1"]));
+
   runApp(App());
 }
 
@@ -41,7 +46,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   final _fileRepository = FileRepositoryImpl();
   final _predictionCubit = PredictionCubit();
   final _advertService = AdvertService();

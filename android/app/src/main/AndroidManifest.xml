@@ -3,7 +3,7 @@
     package="kz.ertai.age_gender_prediction">
 
     <application
-        android:name="io.flutter.app.FlutterApplication"
+        android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:label="Predict">
         <activity
@@ -12,6 +12,7 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
+            android:exported="true"
             android:windowSoftInputMode="adjustResize"
             tools:ignore="UnusedAttribute">
             <meta-data
