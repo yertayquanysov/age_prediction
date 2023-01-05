@@ -10,22 +10,24 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  image_picker: ^0.8.4+11
+  image_picker: ^0.8.6
   superellipse_shape: ^0.2.0
-  flutter_bloc: ^8.0.1
-  google_fonts: ^2.3.1
-  crypto: 3.0.1
+  flutter_bloc: ^8.1.1
+  google_fonts: ^3.0.1
+  crypto: ^3.0.2
 
-  google_mobile_ads: ^1.1.0
+  google_mobile_ads: ^2.3.0
 
-  firebase_core: ^1.13.1
-  firebase_storage: ^10.2.9
-  firebase_analytics: ^9.1.2
+  tflite_flutter: ^0.9.0
+
+  firebase_core: ^2.4.0
+  firebase_storage: ^11.0.8
+  firebase_analytics: ^10.0.7
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_native_splash: ^2.1.1
+  flutter_native_splash: ^2.2.16
 
 flutter:
   uses-material-design: true

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:age_gender_prediction/models/response.dart';
 import 'package:http/http.dart' as http;
+import 'package:tflite_flutter/tflite_flutter.dart' as tfl;
 
 import '../config.dart';
 
@@ -20,5 +21,11 @@ class PredictionRepository {
     );
 
     return Response.fromJson(jsonDecode(response.body)[0]);
+  }
+
+  Future<int> getAge() async {
+    final interpreter = await tfl.Interpreter.fromAsset('your_model.tflite');
+
+    return 0;
   }
 }

@@ -14,11 +14,9 @@ import 'components/preview_image.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp();
   await MobileAds.instance.initialize();
-
-  MobileAds.instance.updateRequestConfiguration(RequestConfiguration(
-      testDeviceIds: ["B312B83BEF97FD5524A6EB49C498F8E1"]));
 
   runApp(App());
 }
@@ -28,9 +26,18 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: HomePage(),
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         appBarTheme: AppBarTheme(
-          backgroundColor: Colors.transparent,
+          backgroundColor: Colors.white,
+          elevation: 5,
+          shadowColor: Colors.black12,
+          centerTitle: true,
+          titleTextStyle: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         textTheme: GoogleFonts.ubuntuTextTheme(
           Theme.of(context).textTheme,

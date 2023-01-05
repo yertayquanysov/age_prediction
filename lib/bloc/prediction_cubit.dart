@@ -41,7 +41,6 @@ class PredictionCubit extends Cubit<PredictionState> {
         result: predictionResult.age,
         selectedImage: uploadedImageURL,
       ));
-
     } catch (e) {
       emit(PredictionException(e.toString()));
     }
