@@ -2,6 +2,7 @@ import 'package:age_gender_prediction/bloc/prediction_cubit.dart';
 import 'package:age_gender_prediction/components/base_progress_bar.dart';
 import 'package:age_gender_prediction/config.dart';
 import 'package:age_gender_prediction/repository/file_repository.dart';
+import 'package:age_gender_prediction/repository/prediction_repository.dart';
 import 'package:age_gender_prediction/services/advert_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:superellipse_shape/superellipse_shape.dart';
+import 'package:tflite/tflite.dart';
 
 import 'components/preview_image.dart';
 
@@ -28,6 +30,9 @@ class App extends StatelessWidget {
       home: HomePage(),
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        textTheme: GoogleFonts.ubuntuTextTheme(
+          Theme.of(context).textTheme,
+        ),
         appBarTheme: AppBarTheme(
           backgroundColor: Colors.white,
           elevation: 5,
@@ -38,9 +43,6 @@ class App extends StatelessWidget {
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
-        ),
-        textTheme: GoogleFonts.ubuntuTextTheme(
-          Theme.of(context).textTheme,
         ),
       ),
     );
@@ -56,12 +58,19 @@ class _HomePageState extends State<HomePage> {
   final _fileRepository = FileRepositoryImpl();
   final _predictionCubit = PredictionCubit();
   final _advertService = AdvertService();
+  final PredictionRepository _predictionRepository = PredictionRepository();
 
   @override
   void initState() {
     super.initState();
 
     _advertService.loadInterstitialAd();
+  }
+
+  @override
+  void dispose() async {
+    await Tflite.close();
+    super.dispose();
   }
 
   @override
@@ -121,9 +130,11 @@ class _HomePageState extends State<HomePage> {
                     shape: SuperellipseShape(
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    onPressed: () => _fileRepository
-                        .getImage()
-                        .then((value) => _predictionCubit.predict(value)),
+                    onPressed: () => _fileRepository.getImage().then((value) {
+                      _predictionRepository.getAge(value.path);
+
+                      // _predictionCubit.predict(value);
+                    }),
                   ),
                   const SizedBox(height: 30),
                   Visibility(

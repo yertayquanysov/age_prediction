@@ -1,5 +1,3 @@
-
-
 class Response {
   final String age;
 
@@ -9,7 +7,7 @@ class Response {
 
   static Response fromJson(Map<String, dynamic> data) {
     return Response(
-      age: data["age"].toInt().toString(),
+      age: data["age"].toString(),
     );
   }
 }

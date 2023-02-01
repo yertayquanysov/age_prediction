@@ -38,6 +38,11 @@ android {
         disable 'InvalidPackage'
     }
 
+    aaptOptions {
+        noCompress 'tflite'
+        noCompress 'lite'
+    }
+
     defaultConfig {
         applicationId "kz.ertai.age_gender_prediction"
         minSdkVersion 21
